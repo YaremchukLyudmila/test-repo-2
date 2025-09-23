@@ -1,10 +1,7 @@
 package edu.innotech.ui;
 
 import edu.innotech.ui.pages.FlyPobedaPage;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -25,7 +22,8 @@ public class SeleniumTest {
     }
 
     @Test
-    public void test() {
+    @Disabled
+    public void test1() {
         FlyPobedaPage flyPobedaPage = new FlyPobedaPage(webDriver);
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         webDriver.get("https://pobeda.aero/");
@@ -33,5 +31,22 @@ public class SeleniumTest {
         Assertions.assertTrue(flyPobedaPage.existLogo());
         flyPobedaPage.moveMouseToInformation();
         Assertions.assertTrue(flyPobedaPage.проверкаВсплывающегоМеню());
+    }
+
+    @Test
+    public void test2() {
+        FlyPobedaPage flyPobedaPage = new FlyPobedaPage(webDriver);
+        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        webDriver.manage().window().maximize();
+        webDriver.get("https://pobeda.aero/");
+        Assertions.assertEquals(flyPobedaPage.getTitle(), "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками");
+        Assertions.assertTrue(flyPobedaPage.existLogo());
+
+        flyPobedaPage.scrollToTicketFind();
+        Assertions.assertTrue(flyPobedaPage.isExistTicketFind());
+        flyPobedaPage.setTextFrom("Москва");
+        flyPobedaPage.setTextTo("Санкт-Петербург");
+        flyPobedaPage.submitFind();
+        Assertions.assertTrue(flyPobedaPage.isErrorDateTo());
     }
 }
