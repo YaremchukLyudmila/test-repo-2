@@ -1,89 +1,83 @@
 package edu.innotech.ui;
 
-import edu.innotech.ui.pages.FindOrderPage;
-import edu.innotech.ui.pages.FlyPobedaPage;
+import com.codeborne.selenide.WebDriverRunner;
+import edu.innotech.ui.pages.*;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.time.Duration;
-
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Selenide.*;
 import static edu.innotech.ui.Utils.delay;
 
 public class SeleniumTest {
 
-    static WebDriver webDriver;
-
-    @BeforeAll
-    public static void init() {
-        webDriver = new ChromeDriver();
+    @AfterEach
+    public void closeWindowSelenide() {
+        closeWindow();
     }
 
     @AfterAll
     public static void close() {
-        webDriver.close();
+        closeWebDriver();
     }
 
     @Test
-    @Disabled
     public void test1() {
-        FlyPobedaPage flyPobedaPage = new FlyPobedaPage(webDriver);
-        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        webDriver.get("https://pobeda.aero/");
-        Assertions.assertEquals(flyPobedaPage.getTitle(), "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками");
-        Assertions.assertTrue(flyPobedaPage.existLogo());
+        open("https://pobeda.aero/");
+        WebDriverRunner.getWebDriver().manage().window().maximize();
+        $("title").shouldHave(attribute(
+                "text",
+                "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками"));
+        FlyPobedaPageHeader flyPobedaPage = new FlyPobedaPageHeader();
+        Assertions.assertTrue(flyPobedaPage.getLogo().isDisplayed());
         flyPobedaPage.moveMouseToInformation();
-        Assertions.assertTrue(flyPobedaPage.проверкаВсплывающегоМеню());
+        Assertions.assertTrue(flyPobedaPage.isPreparingForFlightVisible());
     }
 
     @Test
-    @Disabled
     public void test2() {
-        FlyPobedaPage flyPobedaPage = new FlyPobedaPage(webDriver);
-        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        webDriver.manage().window().maximize();
-        webDriver.get("https://pobeda.aero/");
-        Assertions.assertEquals(flyPobedaPage.getTitle(), "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками");
-        Assertions.assertTrue(flyPobedaPage.existLogo());
+        open("https://pobeda.aero/");
+        WebDriverRunner.getWebDriver().manage().window().maximize();
+        $("title").shouldHave(attribute(
+                "text",
+                "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками"));
+        FlyPobedaPageHeader flyPobedaPage = new FlyPobedaPageHeader();
+        Assertions.assertTrue(flyPobedaPage.getLogo().isDisplayed());
 
-        flyPobedaPage.scrollToTicketFind();
-        Assertions.assertTrue(flyPobedaPage.isExistTicketFind());
-        flyPobedaPage.setTextFrom("Москва");
-        flyPobedaPage.setTextTo("Санкт-Петербург");
-        flyPobedaPage.submitFind();
-        Assertions.assertTrue(flyPobedaPage.isErrorDateTo());
+        FlyPobedaSearchForm flyPobedaSearchForm = new FlyPobedaSearchForm();
+        flyPobedaSearchForm.scrollToTicketFind();
+        Assertions.assertTrue(flyPobedaSearchForm.isExistTicketFind());
+        flyPobedaSearchForm.setTextFrom("Москва");
+        flyPobedaSearchForm.setTextTo("Санкт-Петербург");
+        flyPobedaSearchForm.submitFind();
+        Assertions.assertTrue(flyPobedaSearchForm.isErrorDateTo());
+        delay(5);
     }
 
     @Test
     public void test3() {
-        FlyPobedaPage flyPobedaPage = new FlyPobedaPage(webDriver);
-        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
-        webDriver.manage().window().maximize();
-        webDriver.get("https://pobeda.aero/");
-        Assertions.assertEquals(flyPobedaPage.getTitle(), "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками");
-        Assertions.assertTrue(flyPobedaPage.existLogo());
+        open("https://pobeda.aero/");
+        WebDriverRunner.getWebDriver().manage().window().maximize();
+        $("title").shouldHave(attribute(
+                "text",
+                "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками"));
+        FlyPobedaPageHeader flyPobedaPage = new FlyPobedaPageHeader();
+        Assertions.assertTrue(flyPobedaPage.getLogo().isDisplayed());
 
-        flyPobedaPage.selectTicketBooking();
-        Assertions.assertTrue(flyPobedaPage.isBookingElementsVisible());
-        flyPobedaPage.setTicketBookingSurname("Qwerty");
-        flyPobedaPage.setTicketBookingNumber("XXXXXX");
-        flyPobedaPage.clickTicketBookingFind();
-        switchToNewTab();
+        delay(1);
+        FlyPobedaBookingForm bookingForm = new FlyPobedaBookingForm();
+        bookingForm.scrollAndSelectTicketBooking();
 
-        delay(10);
-        FindOrderPage findOrderPage = new FindOrderPage(webDriver);
+        Assertions.assertTrue(bookingForm.isBookingElementsVisible());
+        bookingForm.setTicketBookingSurname("Qwerty");
+        bookingForm.setTicketBookingNumber("XXXXXX");
+        bookingForm.clickTicketBookingFind();
+        switchTo().window(1);
+        delay(3);
+
+        FindOrderPage findOrderPage = new FindOrderPage();
         findOrderPage.setCheckBoxAccept();
         findOrderPage.clickFindOrderButton();
+        delay(5); // на случай проверки на бота
         Assertions.assertTrue(findOrderPage.isVisibleDivOrderNotFound());
-    }
-
-    private static void switchToNewTab() {
-        for (String window: webDriver.getWindowHandles()) {
-            if (!window.equals(webDriver.getWindowHandle())) {
-                webDriver = webDriver.switchTo().window(window);
-                return;
-            }
-        }
     }
 }

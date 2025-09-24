@@ -1,37 +1,22 @@
 package edu.innotech.ui.pages;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
+
+import static com.codeborne.selenide.Selectors.byTagAndText;
+import static com.codeborne.selenide.Selectors.byXpath;
+import static com.codeborne.selenide.Selenide.$;
 
 public class FindOrderPage {
 
-    private final WebDriver webDriver;
-
-    @FindBy(xpath = "//div[@class='customCheckbox']")
-    private WebElement checkBoxAccept;
-
-    @FindBy(xpath = "//button[text()='Найти заказ']")
-    private WebElement findOrderButton;
-
-    @FindBy(xpath = "//div[text()='Заказ с указанными параметрами не найден']")
-    private WebElement divOrderNotFound;
-
-    public FindOrderPage(WebDriver webDriver) {
-        this.webDriver = webDriver;
-        PageFactory.initElements(webDriver, this);
-    }
-
     public void setCheckBoxAccept() {
-        checkBoxAccept.click();
+        $(byXpath("//div[@class='customCheckbox']")).click();
     }
+
 
     public void clickFindOrderButton() {
-        findOrderButton.click();
+        $(byTagAndText("button", "Найти заказ")).click();
     }
 
     public boolean isVisibleDivOrderNotFound() {
-        return divOrderNotFound.isDisplayed();
+        return $(byTagAndText("div", "Заказ с указанными параметрами не найден")).isDisplayed();
     }
 }
