@@ -1,22 +1,32 @@
 package edu.innotech.ui.pages;
 
 
+import com.codeborne.selenide.SelenideElement;
+
+import java.time.Duration;
+
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byTagAndText;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 
 public class FindOrderPage {
 
+    private final SelenideElement checkBox = $(byXpath("//div[@class='customCheckbox']"));
+    private final SelenideElement findOrderButton = $(byTagAndText("button", "Найти заказ"));
+    private final SelenideElement divOrderNotFound = $(byTagAndText("div", "Заказ с указанными параметрами не найден"));
+
     public void setCheckBoxAccept() {
-        $(byXpath("//div[@class='customCheckbox']")).click();
+        checkBox.shouldBe(visible, Duration.ofSeconds(30));
+        checkBox.click();
     }
 
 
     public void clickFindOrderButton() {
-        $(byTagAndText("button", "Найти заказ")).click();
+        findOrderButton.click();
     }
 
-    public boolean isVisibleDivOrderNotFound() {
-        return $(byTagAndText("div", "Заказ с указанными параметрами не найден")).isDisplayed();
+    public SelenideElement getDivOrderNotFound() {
+        return divOrderNotFound;
     }
 }

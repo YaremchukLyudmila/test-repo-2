@@ -1,12 +1,23 @@
 package edu.innotech.ui;
 
 import com.codeborne.selenide.WebDriverRunner;
-import edu.innotech.ui.pages.*;
-import org.junit.jupiter.api.*;
+import edu.innotech.ui.pages.FindOrderPage;
+import edu.innotech.ui.pages.FlyPobedaBookingForm;
+import edu.innotech.ui.pages.FlyPobedaPageHeader;
+import edu.innotech.ui.pages.FlyPobedaSearchForm;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Selenide.*;
-import static edu.innotech.ui.Utils.delay;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.closeWebDriver;
+import static com.codeborne.selenide.Selenide.closeWindow;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.switchTo;
 
 public class SeleniumTest {
 
@@ -28,9 +39,10 @@ public class SeleniumTest {
                 "text",
                 "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками"));
         FlyPobedaPageHeader flyPobedaPage = new FlyPobedaPageHeader();
-        Assertions.assertTrue(flyPobedaPage.getLogo().isDisplayed());
+        flyPobedaPage.checkLogoVisibility();
         flyPobedaPage.moveMouseToInformation();
-        Assertions.assertTrue(flyPobedaPage.isPreparingForFlightVisible());
+
+        flyPobedaPage.checkIsPreparingForFlightVisible();
     }
 
     @Test
@@ -41,16 +53,15 @@ public class SeleniumTest {
                 "text",
                 "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками"));
         FlyPobedaPageHeader flyPobedaPage = new FlyPobedaPageHeader();
-        Assertions.assertTrue(flyPobedaPage.getLogo().isDisplayed());
+        flyPobedaPage.checkLogoVisibility();
 
         FlyPobedaSearchForm flyPobedaSearchForm = new FlyPobedaSearchForm();
         flyPobedaSearchForm.scrollToTicketFind();
-        Assertions.assertTrue(flyPobedaSearchForm.isExistTicketFind());
+        flyPobedaSearchForm.checkIsExistTicketFind();
         flyPobedaSearchForm.setTextFrom("Москва");
         flyPobedaSearchForm.setTextTo("Санкт-Петербург");
         flyPobedaSearchForm.submitFind();
-        Assertions.assertTrue(flyPobedaSearchForm.isErrorDateTo());
-        delay(5);
+        flyPobedaSearchForm.checkIsErrorDateTo();
     }
 
     @Test
@@ -61,23 +72,20 @@ public class SeleniumTest {
                 "text",
                 "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками"));
         FlyPobedaPageHeader flyPobedaPage = new FlyPobedaPageHeader();
-        Assertions.assertTrue(flyPobedaPage.getLogo().isDisplayed());
+        flyPobedaPage.checkLogoVisibility();
 
-        delay(1);
         FlyPobedaBookingForm bookingForm = new FlyPobedaBookingForm();
         bookingForm.scrollAndSelectTicketBooking();
 
-        Assertions.assertTrue(bookingForm.isBookingElementsVisible());
+        bookingForm.checkVisibilityBookingElementsVisible();
         bookingForm.setTicketBookingSurname("Qwerty");
         bookingForm.setTicketBookingNumber("XXXXXX");
         bookingForm.clickTicketBookingFind();
         switchTo().window(1);
-        delay(3);
 
         FindOrderPage findOrderPage = new FindOrderPage();
         findOrderPage.setCheckBoxAccept();
         findOrderPage.clickFindOrderButton();
-        delay(5); // на случай проверки на бота
-        Assertions.assertTrue(findOrderPage.isVisibleDivOrderNotFound());
+        findOrderPage.getDivOrderNotFound().shouldBe(visible, Duration.ofMinutes(1));
     }
 }
